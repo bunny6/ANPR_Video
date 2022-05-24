@@ -1,14 +1,15 @@
-### importing required libraries
+#importing required libraries
 import torch
 import cv2
 import time
-# import pytesseract
+#import pytesseract
 import re
 import numpy as np
 import easyocr
 import psycopg2
 import psycopg2.extras
 
+#connecting to db
 conn = psycopg2.connect( #psycopg2 database adaptor for implementing python
         host="localhost",
         database="num_plate",
