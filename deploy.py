@@ -15,14 +15,13 @@ conn = psycopg2.connect( #psycopg2 database adaptor for implementing python
         user='postgres',
         password='p@ssw0rd')
 
-##### DEFINING GLOBAL VARIABLE
+#DEFINING GLOBAL VARIABLE
 EASY_OCR = easyocr.Reader(['en']) ### initiating easyocr
 OCR_TH = 0.2
 
 
 plates=[]
 
-### -------------------------------------- function to run detection ---------------------------------------------------------
 def detectx (frame, model):
     frame = [frame]
     print(f"[INFO] Detecting. . . ")
@@ -36,15 +35,10 @@ def detectx (frame, model):
 
     return labels, cordinates
 
-### ------------------------------------ to plot the BBox and results --------------------------------------------------------
+
 def plot_boxes(results, frame,classes):
 
-    """
-    --> This function takes results, frame and classes
-    --> results: contains labels and coordinates predicted by model on the given frame
-    --> classes: contains the strting labels
-
-    """
+ 
     labels, cord = results
     n = len(labels)
     x_shape, y_shape = frame.shape[1], frame.shape[0]
@@ -53,7 +47,7 @@ def plot_boxes(results, frame,classes):
     print(f"[INFO] Looping through all detections. . . ")
 
 
-    ### looping through the detections
+  
     for i in range(n):
         row = cord[i]
         if row[4] >= 0.55: ### threshold value for detection. We are discarding everything below this value
@@ -74,15 +68,7 @@ def plot_boxes(results, frame,classes):
 
             # cv2.imwrite("./output/np.jpg",frame[int(y1)-25:int(y2)+25, int(x1)-25:int(x2)+25])
 
-
-
-
     return frame
-
-
-
-#### ---------------------------- function to recognize license plate --------------------------------------
-
 
 # function to recognize license plate numbers using Tesseract OCR
 def recognize_plate_easyocr(img, coords,reader,region_threshold):
@@ -104,8 +90,6 @@ def recognize_plate_easyocr(img, coords,reader,region_threshold):
     return text
 
 
-### to filter out wrong detections 
-
 def filter_text(region, ocr_result, region_threshold):
     rectangle_size = region.shape[0]*region.shape[1]
     
@@ -120,11 +104,6 @@ def filter_text(region, ocr_result, region_threshold):
     return plate
 
 
-
-
-
-### ---------------------------------------------- Main function -----------------------------------------------------
-
 def main(img_path=None, vid_path=None,vid_out = None):
 
     print(f"[INFO] Loading model... ")
@@ -132,41 +111,9 @@ def main(img_path=None, vid_path=None,vid_out = None):
     # model =  torch.hub.load('ultralytics/yolov5', 'custom', path='last.pt',force_reload=True) ## if you want to download the git repo and then run the detection
     model =  torch.hub.load('yolov5', 'custom', source ='local', path='best.pt',force_reload=True) ### The repo is stored locally
 
-    classes = model.names ### class names in string format
+    classes = model.names 
 
 
-
-
-    ### --------------- for detection on image --------------------
-    if img_path != None:
-        print(f"[INFO] Working with image: {img_path}")
-        img_out_name = f"./output/result_{img_path.split('/')[-1]}"
-
-        frame = cv2.imread(img_path) ### reading the image
-        frame = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
-        
-        results = detectx(frame, model = model) ### DETECTION HAPPENING HERE    
-
-        frame = cv2.cvtColor(frame,cv2.COLOR_RGB2BGR)
-
-        frame = plot_boxes(results, frame,classes = classes)
-        
-
-        cv2.namedWindow("img_only", cv2.WINDOW_NORMAL) ## creating a free windown to show the result
-
-        while True:
-            # frame = cv2.cvtColor(frame,cv2.COLOR_RGB2BGR)
-
-            cv2.imshow("img_only", frame)
-
-            if cv2.waitKey(5) & 0xFF == ord('q'):
-                print(f"[INFO] Exiting. . . ")
-
-                cv2.imwrite(f"{img_out_name}",frame) ## if you want to save he output result.
-
-                break
-
-    ### --------------- for detection on video --------------------
     elif vid_path !=None:
         print(f"[INFO] Working with video: {vid_path}")
 
@@ -214,13 +161,9 @@ def main(img_path=None, vid_path=None,vid_out = None):
         
         
         
-        ## closing all windows
+        #closing all windows
                 cv2.destroyAllWindows()
                 break
-
-
-
-### -------------------  calling the main function-------------------------------
 
 
 main(vid_path="slavia.mp4",vid_out="vid_1.mp4") ### for custom video
